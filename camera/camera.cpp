@@ -1,13 +1,7 @@
 #include "camera.hpp"
 
-using std::cout;
-using std::cerr;
-using std::endl;
-
-//using namespace cv;
-
 // Constructor
-camera::camera() : x_(0),
+Camera::Camera() : x_(0),
                    y_(0),
 
                    camera_(0),
@@ -32,7 +26,7 @@ camera::camera() : x_(0),
 }
 
 // Destructor
-camera::~camera()
+Camera::~Camera()
 {
         x_ = -1;
         y_ = -1;
@@ -47,12 +41,15 @@ camera::~camera()
         objMoment01_ = -1;
         objMoment10_ = -1;
         objArea_     = -1;
+
+        fail_ = true;
+        errorString_ = "";
 }
 
 // Methods
 
 void
-camera::refresh()
+Camera::refresh()
 {
         int ret = 0;
 
@@ -100,38 +97,38 @@ camera::refresh()
 
 }
 
-inline int
-camera::getX()
+int
+Camera::getX()
 {
         return x_;
 }
 
-inline int
-camera::getY()
+int
+Camera::getY()
 {
         return y_;
 }
 
-inline void
-camera::setFail()
+void
+Camera::setFail()
 {
         fail_ = true;
 }
 
-inline bool
-camera::fail()
+bool
+Camera::fail()
 {
         return fail_;
 }
 
-inline void
-camera::setErrorStr(string errorStr)
+void
+Camera::setErrorStr(std::string errorString)
 {
-        errorString_ = errorStr;
+        errorString_ = errorString;
 }
 
-inline string
-camera::getErrorStr()
+std::string
+Camera::getErrorStr()
 {
         return errorString_;
 }

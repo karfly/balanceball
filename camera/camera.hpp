@@ -6,14 +6,12 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
-using std::string;
-
-class camera
+class Camera
 {
 
 public:
-        camera();
-        ~camera();
+        Camera();
+        ~Camera();
 
         void refresh();
 
@@ -23,7 +21,7 @@ public:
         bool fail();
 
 
-        string getErrorStr();
+        std::string getErrorStr();
 
         // Constants for white ball 
         static const int lowH_       = 0;        // Hue (0 - 179)
@@ -39,7 +37,7 @@ public:
 
 private:
         void setFail();
-        void setErrorStr(string );
+        void setErrorStr(std::string );
 
         int x_;                         // If coordinates' values equal to (-1), it means 
         int y_;                         // that there is no object on the frame
@@ -56,7 +54,7 @@ private:
         double  objArea_;               // Number of pixels of the object
 
         bool fail_;                     // True on fail
-        string errorString_;            // If fail_ is true, here is a valid reason of the error
+        std::string errorString_;            // If fail_ is true, here is a valid reason of the error
 };
 
 
