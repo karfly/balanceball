@@ -11,11 +11,11 @@ Camera::Camera() : x_(0),
                    imgThresholded_(),
 
                    objMoments_(),
-                   objMoment01_(0),
-                   objMoment10_(0),
-                   objArea_(0),
+                   objMoment01_(0.0),
+                   objMoment10_(0.0),
+                   objArea_(0.0),
 
-                   fail_(0),
+                   fail_(false),
                    errorString_("")
 {
         if ( !camera_.isOpened() )  // If not success, exit program
@@ -23,6 +23,12 @@ Camera::Camera() : x_(0),
                 this->setFail();
                 this->setErrorStr( "Failed to open camera." );
         }
+
+        cv::Mat imgTmp;
+        camera_.read( imgTmp );
+
+        // Creating a black image with the size as the camera output
+        imgSquare_ = cv::Mat::zeros( imgTmp.size(), CV_8UC3 );
 }
 
 // Destructor
@@ -64,18 +70,18 @@ Camera::refresh()
 
         cv::cvtColor( imgOriginal_, imgHSV_, cv::COLOR_BGR2HSV ); // Converting the captured frame from BGR to HSV
 
-        cv::inRange( imgHSV_,
+        cv::inRange( imgHSV_,                                     // Thresholding the image
                      cv::Scalar(lowH_,  lowS_,  lowV_ ),
                      cv::Scalar(highH_, highS_, highV_),
-                     imgThresholded_ );                           // Thresholding the image
+                     imgThresholded_ );
 
         // Morphological opening (removes small objects from the foreground)
         cv::erode ( imgThresholded_, imgThresholded_, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)) );
-        cv::dilate( imgThresholded_, imgThresholded_, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)) ); 
+        cv::dilate( imgThresholded_, imgThresholded_, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)) );
 
 
         // Morphological closing (removes small holes from the foreground)
-        cv::dilate( imgThresholded_, imgThresholded_, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)) ); 
+        cv::dilate( imgThresholded_, imgThresholded_, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)) );
         cv::erode ( imgThresholded_, imgThresholded_, cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5)) );
 
         // Calculating the moments of the thresholded image
@@ -85,15 +91,35 @@ Camera::refresh()
         objMoment10_ = objMoments_.m10;
         objArea_     = objMoments_.m00;
 
-        if (objArea_ > ballArea_)
+        if (objArea_ > 0)
         {
                 x_ = objMoment10_ / objArea_;
                 y_ = objMoment01_ / objArea_;
+
+                // Drawing red square around the ball
+                line( imgSquare_, cv::Point(x_ - ballRadius_, y_ + ballRadius_),        // Vertical lines
+                                  cv::Point(x_ - ballRadius_, y_ - ballRadius_),        //
+                                  cv::Scalar(0,0,255), 2);                              //
+                                                                                        //
+                line( imgSquare_, cv::Point(x_ + ballRadius_, y_ + ballRadius_),        //
+                                  cv::Point(x_ + ballRadius_, y_ - ballRadius_),        //
+                                  cv::Scalar(0,0,255), 2);                              //
+
+                line( imgSquare_, cv::Point(x_ - ballRadius_, y_ + ballRadius_),        // Horizontal lines
+                                  cv::Point(x_ + ballRadius_, y_ + ballRadius_),        //
+                                  cv::Scalar(0,0,255), 2);                              //
+                                                                                        //
+                line( imgSquare_, cv::Point(x_ - ballRadius_, y_ - ballRadius_),        //
+                                  cv::Point(x_ + ballRadius_, y_ - ballRadius_),        //
+                                  cv::Scalar(0,0,255), 2);                              //
         }
 
         cv::imshow( "Thresholded Image", imgThresholded_ ); // Showing the thresholded image
-        cv::imshow( "Original",          imgOriginal_    ); // Showing the original image
 
+        imgOriginal_ = imgOriginal_ + imgSquare_;
+        cv::imshow( "Original", imgOriginal_ ); // Showing the original image
+
+        imgSquare_ = cv::Mat::zeros( imgSquare_.size(), CV_8UC3 ); // Clearing the imgSquare_
 
 }
 
@@ -122,7 +148,7 @@ Camera::fail()
 }
 
 void
-Camera::setErrorStr(std::string errorString)
+Camera::setErrorStr( std::string errorString )
 {
         errorString_ = errorString;
 }
@@ -132,6 +158,3 @@ Camera::getErrorStr()
 {
         return errorString_;
 }
-
-
-

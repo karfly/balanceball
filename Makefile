@@ -11,8 +11,11 @@ LIBS            = -lopencv_core         \
                   -lopencv_flann
 
 
-SOURCES         = balanceball.cpp 	\
-		  ./camera/camera.cpp	
+SOURCES         = balanceball.cpp 	   \
+		  ./camera/camera.cpp	   \
+	          ./pid/pid.cpp		   \
+	          ./platform/platform.cpp
+
 OBJECTS         = $(SOURCES:.c=.o)
 EXECUTABLE      = balanceball
 
