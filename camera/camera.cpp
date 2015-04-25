@@ -91,7 +91,7 @@ Camera::refresh()
         objMoment10_ = objMoments_.m10;
         objArea_     = objMoments_.m00;
 
-        if (objArea_ > 0)
+        if (objArea_ > ballArea_)
         {
                 x_ = objMoment10_ / objArea_;
                 y_ = objMoment01_ / objArea_;

@@ -13,6 +13,9 @@
 #define NORMAL          0
 #define SQUARE          1
 
+#define X_BALANCE       440
+#define Y_BALANCE       300
+
 #define SQUARE_SIDE     140
 #define SQUARE_PERIOD   250
 
@@ -163,11 +166,6 @@ case SQUARE:
                 cout << "signalY: " << pidServoY.getOutput() << endl;
 
                 platform.setAngles( -pidServoX.getOutput(), -pidServoY.getOutput() );
-                if ( platform.fail() )
-                {
-                        cerr << platform.getErrorStr() << endl;
-                        exit( EXIT_FAILURE );
-                }
 
                 cout << "-----------" << endl;
 

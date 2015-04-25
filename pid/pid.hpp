@@ -33,7 +33,7 @@ private:
         double lastInput_;              // Last input, given 1 period ago
         double integralSum_;            // Integral sum
 
-        double output_;                  // Output after computing
+        double output_;                 // Output after computing
 
         double period_;                 // Refreshing period in milliseconds
 
@@ -42,7 +42,6 @@ private:
 
         bool fail_;                     // True on fail
         std::string errorString_;       // If fail_ is true, here is a valid reason of the error
-
 };
 
 #endif // PID_HPP
